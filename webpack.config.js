@@ -84,8 +84,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      '@img': resolve(__dirname, './src/img'),
-      '@font': resolve(__dirname, './src/font')
+      '@img': resolve(__dirname, './src/img/'),
+      '@font': resolve(__dirname, './src/font/')
     }
   },
   plugins: [
