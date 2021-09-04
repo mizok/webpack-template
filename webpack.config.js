@@ -13,6 +13,7 @@ module.exports = {
     path: resolve(__dirname, 'build'),
     clean: true,
   },
+  target: 'web',
   devServer: {
     contentBase: resolve(__dirname, 'build'),
     open: true,
