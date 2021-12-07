@@ -9,6 +9,7 @@ let entry = ((globalSources) => {
   let entryObj = {};
   let jsRegx = /(.*)(\.js)/g
   fs.readdirSync(resolve(__dirname, 'src/js')).forEach((o) => {
+    if (!o.match(jsRegx)) return;
     let entryPath = `${resolve(__dirname, 'src/js')}/${o}`;
     let entryName = o.replace(jsRegx, `$1`);
     entryObj[entryName] = [entryPath, ...globalSources];
@@ -19,13 +20,19 @@ let entry = ((globalSources) => {
 let entryTemplates = Object.keys(entry).map((entryName) => {
   // check if template exist;
   let ejsTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.ejs`));
-  return {
+  let htmlTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.html`));
+
+
+  if (!ejsTemplateFileExist && !htmlTemplateFileExist) {
+    throw new Error(`目錄中找不到名為"${entryName}.ejs"的模板檔案，同時也不存在名為"${entryName}.html"的模板檔案`)
+  }
+
+  return new HtmlWebpackPlugin({
     filename: `${entryName}.html`,
     template: ejsTemplateFileExist ? `${entryName}.ejs` : `${entryName}.html`
-  }
+  })
 })
 
-console.log(entryTemplates);
 
 module.exports = {
   entry: entry,
@@ -123,9 +130,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: './assets/css/[name].css'
     }),
-    new HtmlWebpackPlugin({
-      filename: `index.html`,
-      template: './index.ejs'
-    })
+    ...entryTemplates,
   ]
 }
