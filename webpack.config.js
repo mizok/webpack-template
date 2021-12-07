@@ -1,12 +1,34 @@
+const fs = require('fs');
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+let globalSources = ['./src/scss/main.scss'];
+
+let entry = ((globalSources) => {
+  let entryObj = {};
+  let jsRegx = /(.*)(\.js)/g
+  fs.readdirSync(resolve(__dirname, 'src/js')).forEach((o) => {
+    let entryPath = `${resolve(__dirname, 'src/js')}/${o}`;
+    let entryName = o.replace(jsRegx, `$1`);
+    entryObj[entryName] = [entryPath, ...globalSources];
+  })
+  return entryObj;
+})(globalSources)
+
+let entryTemplates = Object.keys(entry).map((entryName) => {
+  // check if template exist;
+  let ejsTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.ejs`));
+  return {
+    filename: `${entryName}.html`,
+    template: ejsTemplateFileExist ? `${entryName}.ejs` : `${entryName}.html`
+  }
+})
+
+console.log(entryTemplates);
 
 module.exports = {
-  entry: {
-    main: ['./src/js/index.js', './src/scss/main.scss'],
-  },
+  entry: entry,
   output: {
     filename: 'assets/js/[name].js',
     chunkFilename: '[name].min.js',
@@ -41,6 +63,13 @@ module.exports = {
             loader: 'html-loader',
           }
         ],
+      },
+      {
+        test: /\.ejs$/,
+        use: [
+          'html-loader',
+          'template-ejs-loader'
+        ]
       },
       {
         test: /\.(jpe?g|png|gif|svg)$/,
@@ -96,7 +125,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       filename: `index.html`,
-      template: './index.html'
+      template: './index.ejs'
     })
   ]
 }
