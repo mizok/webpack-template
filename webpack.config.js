@@ -47,6 +47,7 @@ module.exports = {
     contentBase: resolve(__dirname, 'build'),
     open: true,
     compress: true,
+    hot: true
   },
   mode: 'development',
   module: {
