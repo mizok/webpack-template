@@ -3,28 +3,29 @@ const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
-let globalSources = ['./src/scss/main.scss'];
+const globalSources = ['./src/scss/main.scss'];
 
-let entry = ((globalSources) => {
-  let entryObj = {};
-  let jsRegx = /(.*)(\.js)/g
+const entry = ((globalSources) => {
+  const entryObj = {};
+  const jsRegx = /(.*)(\.js)/g
   fs.readdirSync(resolve(__dirname, 'src/js')).forEach((o) => {
     if (!o.match(jsRegx)) return;
-    let entryPath = `${resolve(__dirname, 'src/js')}/${o}`;
-    let entryName = o.replace(jsRegx, `$1`);
+    const entryPath = `${resolve(__dirname, 'src/js')}/${o}`;
+    const entryName = o.replace(jsRegx, `$1`);
     entryObj[entryName] = [entryPath, ...globalSources];
   })
   return entryObj;
 })(globalSources)
 
-let entryTemplates = Object.keys(entry).map((entryName) => {
+
+const entryTemplates = Object.keys(entry).map((entryName) => {
   // check if template exist;
-  let ejsTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.ejs`));
-  let htmlTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.html`));
+  const ejsTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.ejs`));
+  const htmlTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.html`));
 
 
   if (!ejsTemplateFileExist && !htmlTemplateFileExist) {
-    throw new Error(`目錄中找不到名為"${entryName}.ejs"的模板檔案，同時也不存在名為"${entryName}.html"的模板檔案`)
+    throw new Error(`目錄中找不到名為"${entryName}.ejs"的模板檔案，同時也不存在名為"${entryName}.html"的模板檔案。請注意，當新增Entry JS File時都必須要同時建立同名的模板檔案。`)
   }
 
   return new HtmlWebpackPlugin({
