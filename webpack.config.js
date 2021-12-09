@@ -25,7 +25,7 @@ const entryTemplates = Object.keys(entry).map((entryName) => {
 
 
   if (!ejsTemplateFileExist && !htmlTemplateFileExist) {
-    throw new Error(`目錄中找不到名為"${entryName}.ejs"的模板檔案，同時也不存在名為"${entryName}.html"的模板檔案。請注意，當新增Entry JS File時都必須要同時建立同名的模板檔案。`)
+    throw new Error(`目錄中找不到名為"${entryName}.ejs"的模板檔案，同時也不存在名為"${entryName}.html"的模板檔案。每當新增Entry JS File，請同時建立同名的模板檔案。`)
   }
 
   return new HtmlWebpackPlugin({
