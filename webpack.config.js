@@ -21,10 +21,11 @@ const entry = ((globalSources) => {
 
 
 const entryTemplates = Object.keys(entry).map((entryName) => {
-  // 如果解析出來的檔名還包含"."的話, 例如"{name}.{template}", 則將{template}的部分自動解析為預計使用共用的模板檔案
+
   let templateName = entryName;
   let fileName = entryName;
   const templateRegex = /(.*)(\.)(.*)/g;
+  // 如果解析出來的檔名還包含"."的話, 例如"{name}.{template}", 則將{template}的部分自動解析為預計使用共用的模板檔案
   if (entryName.match(templateRegex)) {
     templateName = entryName.replace(templateRegex, `$3`);
     fileName = entryName.replace(templateRegex, `$1`);
