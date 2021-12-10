@@ -1,6 +1,8 @@
 const fs = require('fs');
+const webpack = require('webpack');
 const { resolve } = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 const globalSources = ['./src/scss/main.scss'];
@@ -143,11 +145,31 @@ module.exports = {
       '@font': resolve(__dirname, './src/font/')
     }
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+  },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000
+  },
   plugins: [
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    }),
     new OptimizeCssAssetsWebpackPlugin(),
     new MiniCssExtractPlugin({
       filename: './assets/css/[name].css'
     }),
+    new CopyPlugin(
+      [
+        { from: 'src/static', to: 'static', ignore: ['.gitkeep'] }
+      ]
+    ),
     ...entryTemplates,
+
   ]
 }

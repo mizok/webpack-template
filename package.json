@@ -22,6 +22,7 @@
     "@babel/core": "^7.14.3",
     "@babel/preset-env": "^7.14.4",
     "babel-loader": "^8.2.2",
+    "copy-webpack-plugin": "^5.1.1",
     "css-loader": "^5.2.1",
     "ejs": "^3.1.6",
     "html-loader": "^2.1.2",
@@ -38,7 +39,9 @@
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "jquery": "^3.6.0"
+  },
   "browserslist": [
     "last 2 version",
     "> 1%",
