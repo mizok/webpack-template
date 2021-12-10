@@ -18,14 +18,11 @@ const entry = ((globalSources) => {
   return entryObj;
 })(globalSources)
 
-
-
 const entryTemplates = Object.keys(entry).map((entryName) => {
-
   let templateName = entryName;
   let fileName = entryName;
   const templateRegex = /(.*)(\.)(.*)/g;
-  // 如果解析出來的檔名還包含"."的話, 例如"{name}.{template}", 則將{template}的部分自動解析為預計使用共用的模板檔案
+  // 如果解析出來的entry名還包含"."的話, 例如"{name}.{template}", 則將{template}的部分自動解析為預計使用共用的模板檔案，而{name}則作為build出來的檔案名稱
   if (entryName.match(templateRegex)) {
     templateName = entryName.replace(templateRegex, `$3`);
     fileName = entryName.replace(templateRegex, `$1`);
