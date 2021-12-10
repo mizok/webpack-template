@@ -7,30 +7,49 @@ const globalSources = ['./src/scss/main.scss'];
 
 const entry = ((globalSources) => {
   const entryObj = {};
-  const jsRegx = /(.*)(\.js)/g
+  const jsRegx = /(.*)(\.js)/g;
   fs.readdirSync(resolve(__dirname, 'src/js')).forEach((o) => {
     if (!o.match(jsRegx)) return;
-    const entryPath = `${resolve(__dirname, 'src/js')}/${o}`;
     const entryName = o.replace(jsRegx, `$1`);
+    const entryPath = `${resolve(__dirname, 'src/js')}/${o}`;
+
     entryObj[entryName] = [entryPath, ...globalSources];
   })
   return entryObj;
 })(globalSources)
 
 
-const entryTemplates = Object.keys(entry).map((entryName) => {
-  // check if template exist;
-  const ejsTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.ejs`));
-  const htmlTemplateFileExist = fs.existsSync(resolve(__dirname, `${entryName}.html`));
 
+const entryTemplates = Object.keys(entry).map((entryName) => {
+  // 如果解析出來的檔名還包含"."的話, 例如"{name}.{template}", 則將{template}的部分自動解析為預計使用共用的模板檔案
+  let templateName = entryName;
+  let fileName = entryName;
+  const templateRegex = /(.*)(\.)(.*)/g;
+  if (entryName.match(templateRegex)) {
+    templateName = entryName.replace(templateRegex, `$3`);
+    fileName = entryName.replace(templateRegex, `$1`);
+  };
+  // check if template exist;
+  const ejsTemplateFileExist = fs.existsSync(resolve(__dirname, `${templateName}.ejs`));
+  const htmlTemplateFileExist = fs.existsSync(resolve(__dirname, `${templateName}.html`));
 
   if (!ejsTemplateFileExist && !htmlTemplateFileExist) {
-    throw new Error(`目錄中找不到名為"${entryName}.ejs"的模板檔案，同時也不存在名為"${entryName}.html"的模板檔案。每當新增Entry JS File，請同時建立同名的模板檔案。`)
+    throw new Error(`目錄中找不到名為"${templateName}.ejs"的模板檔案，同時也不存在名為"${templateName}.html"的模板檔案。每當新增Entry JS File，請同時建立同名的模板檔案。`)
+  }
+  if (ejsTemplateFileExist) {
+    const ejsFilePath = resolve(__dirname, `${templateName}.ejs`);
+    const data = fs.readFileSync(ejsFilePath, 'utf8')
+    if (!data) {
+      //填入一個空白字元用來規避template-ejs-loader不接受空白檔案的情況
+      fs.writeFile(ejsFilePath, ' ', () => { });
+      console.warn(`請注意 : ${templateName}.ejs 為空白檔案`);
+    }
   }
 
   return new HtmlWebpackPlugin({
-    filename: `${entryName}.html`,
-    template: ejsTemplateFileExist ? `${entryName}.ejs` : `${entryName}.html`
+    chunks: [entryName],
+    filename: `${fileName}.html`,
+    template: ejsTemplateFileExist ? `${templateName}.ejs` : `${templateName}.html`
   })
 })
 
@@ -48,7 +67,6 @@ module.exports = {
     contentBase: resolve(__dirname, 'build'),
     open: true,
     compress: true,
-    hot: true
   },
   mode: 'development',
   module: {
