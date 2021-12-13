@@ -65,7 +65,6 @@ const config:Configuration = {
   entry: entry,
   output: {
     filename: 'assets/js/[name].js',
-    chunkFilename: '[name].min.js',
     path: resolve(__dirname, 'build'),
     clean: true,
   },
