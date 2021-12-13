@@ -1,26 +1,28 @@
 const fs = require('fs');
 const webpack = require('webpack');
 const { resolve } = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import {Configuration,EntryObject} from 'webpack';
+import { Configuration as ConfigurationDevServer } from 'webpack-dev-server';
 const globalSources = ['./src/scss/main.scss'];
 
-const entry = ((globalSources) => {
-  const entryObj = {};
+const entry:EntryObject = ((globalSources) => {
+  const entryObj:EntryObject = {};
   const jsRegx = /(.*)(\.js)/g;
-  fs.readdirSync(resolve(__dirname, 'src/js')).forEach((o) => {
+  fs.readdirSync(resolve(__dirname, 'src/js')).forEach((o:string) => {
     if (!o.match(jsRegx)) return;
     const entryName = o.replace(jsRegx, `$1`);
     const entryPath = `${resolve(__dirname, 'src/js')}/${o}`;
 
-    entryObj[entryName] = [entryPath, ...globalSources];
+    entryObj[entryName as keyof EntryObject] = [entryPath, ...globalSources];
   })
   return entryObj;
 })(globalSources)
 
-const entryTemplates = Object.keys(entry).map((entryName) => {
+const entryTemplates:HtmlWebpackPlugin[] = Object.keys(entry).map((entryName) => {
   let templateName = entryName;
   let fileName = entryName;
   const templateRegex = /(.*)(\.)(.*)/g;
@@ -53,8 +55,13 @@ const entryTemplates = Object.keys(entry).map((entryName) => {
   })
 })
 
+const devServerObj:ConfigurationDevServer = {
+  open: true,
+  compress: true,
+};
 
-module.exports = {
+
+const config:Configuration = {
   entry: entry,
   output: {
     filename: 'assets/js/[name].js',
@@ -63,11 +70,7 @@ module.exports = {
     clean: true,
   },
   target: 'web',
-  devServer: {
-    contentBase: resolve(__dirname, 'build'),
-    open: true,
-    compress: true,
-  },
+  devServer: devServerObj,
   mode: 'development',
   module: {
     rules: [
@@ -173,3 +176,5 @@ module.exports = {
 
   ]
 }
+
+export default config;
