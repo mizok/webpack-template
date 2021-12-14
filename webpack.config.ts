@@ -11,7 +11,7 @@ const globalSources = ['./src/scss/main.scss'];
 
 const entry:EntryObject = ((globalSources) => {
   const entryObj:EntryObject = {};
-  const jsRegx = /(.*)(\.js)/g;
+  const jsRegx = /(.*)(\.js)$/g;
   fs.readdirSync(resolve(__dirname, 'src/js')).forEach((o:string) => {
     if (!o.match(jsRegx)) return;
     const entryName = o.replace(jsRegx, `$1`);
@@ -56,8 +56,7 @@ const entryTemplates:HtmlWebpackPlugin[] = Object.keys(entry).map((entryName) =>
 })
 
 const devServerObj:ConfigurationDevServer = {
-  open: true,
-  compress: true,
+  open: true
 };
 
 
@@ -121,9 +120,8 @@ const config:Configuration = {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                ident: 'postcss',
                 plugins: [
-                  require('postcss-preset-env')()
+                  "postcss-preset-env",
                 ]
               }
             }
