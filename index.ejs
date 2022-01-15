@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
+<%- include('./src/template/head.ejs',{title:'Index'})%>
 
 <body>
-  <%- include('./src/template/header.ejs',{title:'首頁header標題'}) %>
-  <img src="~@img/apple.jpeg" alt="">
+  <%- include('./src/template/header.ejs') %>
   <%- include('./src/template/footer.ejs') %>
 </body>
 
