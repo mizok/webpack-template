@@ -183,8 +183,7 @@ const config:webpack.Configuration = {
   resolve: {
     alias: {
       '@img': resolve(__dirname, './src/assets/images/'),
-      '@font': resolve(__dirname, './src/assets/fonts/'),
-      '@libimg': resolve(__dirname, 'node_modules/@neux/ui-jquery/img')
+      '@font': resolve(__dirname, './src/assets/fonts/')
     }
   },
   optimization: {
@@ -197,10 +196,6 @@ const config:webpack.Configuration = {
     maxAssetSize: 512000
   },
   plugins: [
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery'
-    }),
     (() => {
       return NO_COMPRESS ? undefined : new OptimizeCssAssetsWebpackPlugin()
     })(),
