@@ -97,7 +97,14 @@ const config:webpack.Configuration = {
     historyApiFallback: true,
     open: true,
     compress: true,
-    watchFiles: ['*.html', 'src/template/*.html', '*.ejs', 'src/template/*.ejs'],// this is important
+    watchFiles: [
+      'src/pages/*.html',
+      'src/template/*.html',
+      'src/template/**/*.html',
+      'src/pages/*.ejs',
+      'src/template/*.ejs',
+      'src/template/**/*.ejs',
+    ],// this is important
     port: 8080
   },
   mode: 'development',
