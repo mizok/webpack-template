@@ -200,7 +200,7 @@ const config:webpack.Configuration = {
           comments: false,
         },
       },
-      test: /\.(ts|js)(\?.*)?$/i,
+      test: /\.js(\?.*)?$/i,
       extractComments: false
     })],
     splitChunks: { name: 'vendor', chunks: 'all' }
