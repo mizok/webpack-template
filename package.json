@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --config webpack.config.ts",
-    "dev": "webpack serve --config webpack.config.ts "
+    "build": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --config webpack.config.ts",
+    "dev": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve --config webpack.config.ts "
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
     "@types/webpack-dev-server": "^4.7.2",
     "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^9.0.1",
+    "cross-env": "^7.0.3",
     "css-loader": "^5.2.1",
     "ejs": "^3.1.6",
     "html-loader": "^3.0.1",
@@ -37,16 +38,17 @@
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
     "template-ejs-loader": "^0.8.0",
+    "terser-webpack-plugin": "^5.3.1",
+    "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",
+    "tsconfig-paths": "^3.12.0",
+    "typescript": "^4.5.5",
     "webpack": "^5.31.2",
     "webpack-cli": "^4.9.1",
     "webpack-dev-server": "^4.7.2"
   },
   "dependencies": {
-    "-": "0.0.1",
-    "D": "^1.0.0",
-    "jquery": "^3.6.0",
-    "typescript": "^4.5.3"
+    "jquery": "^3.6.0"
   },
   "browserslist": [
     "last 2 version",

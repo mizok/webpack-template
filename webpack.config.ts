@@ -1,10 +1,11 @@
 const fs = require('fs');
 const { resolve } = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 import * as webpack from 'webpack';
-import * as webpackDevServer from 'webpack-dev-server';// dont remove this import, it's for webpack-dev-server type
+import 'webpack-dev-server';// dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 
 const NO_COMPRESS = false;
@@ -21,7 +22,7 @@ const entry:webpack.EntryObject = (() => {
     if (entryName.match(entryRegex)) {
       entryName = entryName.replace(entryRegex, `$3`);
     }
-    const entryPath = resolve(__dirname, `src/js/${entryName}.js`);
+    const entryPath = resolve(__dirname, `src/ts/${entryName}.ts`);
     // 該entry的stylesheet
     const entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryName}.scss`);
     const entryExist = fs.existsSync(entryPath);
@@ -87,7 +88,7 @@ const config:webpack.Configuration = {
   output: {
     filename: 'js/[name].[chunkhash].js',
     chunkFilename: '[id].[chunkhash].js',
-    path: resolve(__dirname, 'build'),
+    path: resolve(__dirname, 'dist'),
     clean: true
   },
   target: ['web', 'es5'],
@@ -112,6 +113,11 @@ const config:webpack.Configuration = {
             }
           }
         ],
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
       {
         test: /\.html$/,
@@ -188,6 +194,15 @@ const config:webpack.Configuration = {
   },
   optimization: {
     minimize: !NO_COMPRESS,
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        format: {
+          comments: false,
+        },
+      },
+      test: /\.(ts|js)(\?.*)?$/i,
+      extractComments: false
+    })],
     splitChunks: { name: 'vendor', chunks: 'all' }
   },
   performance: {
