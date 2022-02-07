@@ -36,7 +36,7 @@
     "sass": "^1.32.8",
     "sass-loader": "^11.0.1",
     "style-loader": "^2.0.0",
-    "template-ejs-loader": "^0.7.0",
+    "template-ejs-loader": "^0.8.0",
     "ts-node": "^10.4.0",
     "webpack": "^5.31.2",
     "webpack-cli": "^4.9.1",
