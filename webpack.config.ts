@@ -7,14 +7,15 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 import * as webpack from 'webpack';
 import 'webpack-dev-server';// dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-
 const NO_COMPRESS = false;
+const PAGES_PATH = resolve(__dirname,'./src/pages');
+
 
 //generate entry object
 const entry:webpack.EntryObject = (() => {
   const entryObj:webpack.EntryObject = {};
   const templateRegx = /(.*)(\.)(ejs|html)/g;
-  fs.readdirSync(__dirname).forEach((o:string) => {
+  fs.readdirSync(PAGES_PATH).forEach((o:string) => {
     if (!o.match(templateRegx)) return;
     let entryName:string = o.replace(templateRegx, `$1`);
     const entryRegex = /(.*)(\.)(.*)/g;
@@ -43,7 +44,7 @@ const entry:webpack.EntryObject = (() => {
   return entryObj;
 })()
 //generate htmlWebpackPlugin instances
-const entryTemplates:HtmlWebpackPlugin[] = fs.readdirSync(__dirname).map((fullFileName:string) => {
+const entryTemplates:HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((fullFileName:string) => {
   const templateRegx = /(.*)(\.)(ejs|html)/g;
   const ejsRegex = /(.*)(\.ejs)/g;
   const entryRegex = /(.*)(\.)(.*)(\.)(ejs|html)/g;
@@ -55,7 +56,7 @@ const entryTemplates:HtmlWebpackPlugin[] = fs.readdirSync(__dirname).map((fullFi
     outputFileName = fullFileName.replace(entryRegex, `$1`);
     entryName = fullFileName.replace(entryRegex, `$3`);
   }
-  const ejsFilePath = resolve(__dirname, `${fullFileName}`);
+  const ejsFilePath = resolve(PAGES_PATH, `${fullFileName}`);
   const data = fs.readFileSync(ejsFilePath, 'utf8')
   if (!data) {
     fs.writeFile(ejsFilePath, ' ', () => { });
@@ -66,7 +67,7 @@ const entryTemplates:HtmlWebpackPlugin[] = fs.readdirSync(__dirname).map((fullFi
     cache: false,
     chunks: [entryName],
     filename: `${outputFileName}.html`,
-    template: isEjs ? fullFileName : fullFileName.replace(ejsRegex, `$1.html`),
+    template: isEjs ? ejsFilePath : ejsFilePath.replace(ejsRegex, `$1.html`),
     favicon: 'src/assets/images/logo.svg',
     minify: NO_COMPRESS ? false : {
       collapseWhitespace: true,
