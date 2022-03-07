@@ -8,16 +8,16 @@ import * as webpack from 'webpack';
 import 'webpack-dev-server';// dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 const NO_COMPRESS = false;
-const PAGES_PATH = resolve(__dirname,'./src/pages');
+const PAGES_PATH = resolve(__dirname, './src/pages');
 
 
 //generate entry object
-const entry:webpack.EntryObject = (() => {
-  const entryObj:webpack.EntryObject = {};
+const entry: webpack.EntryObject = (() => {
+  const entryObj: webpack.EntryObject = {};
   const templateRegx = /(.*)(\.)(ejs|html)/g;
-  fs.readdirSync(PAGES_PATH).forEach((o:string) => {
+  fs.readdirSync(PAGES_PATH).forEach((o: string) => {
     if (!o.match(templateRegx)) return;
-    let entryName:string = o.replace(templateRegx, `$1`);
+    let entryName: string = o.replace(templateRegx, `$1`);
     const entryRegex = /(.*)(\.)(.*)/g;
     // 如果解析出來的template名還包含"."的話, 例如"{name}.{entry}", 則將{entry}的部分自動解析為預計使用共用的entry，而{name}則作為build出來的檔案名稱
     if (entryName.match(entryRegex)) {
@@ -44,14 +44,14 @@ const entry:webpack.EntryObject = (() => {
   return entryObj;
 })()
 //generate htmlWebpackPlugin instances
-const entryTemplates:HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((fullFileName:string) => {
+const entryTemplates: HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((fullFileName: string) => {
   const templateRegx = /(.*)(\.)(ejs|html)/g;
   const ejsRegex = /(.*)(\.ejs)/g;
   const entryRegex = /(.*)(\.)(.*)(\.)(ejs|html)/g;
   if (!fullFileName.match(templateRegx)) return;
   const isEjs = fullFileName.match(ejsRegex);
-  let entryName = '';
   let outputFileName = fullFileName.replace(templateRegx, `$1`);
+  let entryName = outputFileName;
   if (fullFileName.match(entryRegex)) {
     outputFileName = fullFileName.replace(entryRegex, `$1`);
     entryName = fullFileName.replace(entryRegex, `$3`);
@@ -73,18 +73,18 @@ const entryTemplates:HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((fullF
       collapseWhitespace: true,
       keepClosingSlash: true,
       removeComments: true,
-      removeRedundantAttributes: false, 
+      removeRedundantAttributes: false,
       removeScriptTypeAttributes: true,
       removeStyleLinkTypeAttributes: true,
       useShortDoctype: true
     }
   })
-}).filter(function (x:HtmlWebpackPlugin|undefined) {
+}).filter(function (x: HtmlWebpackPlugin | undefined) {
   return x !== undefined;
 });
 
 
-const config:webpack.Configuration = {
+const config: webpack.Configuration = {
   entry: entry,
   output: {
     filename: 'js/[name].[chunkhash].js',
