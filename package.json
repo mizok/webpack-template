@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --config webpack.config.ts --mode production",
-    "dev": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve --config webpack.config.ts "
+    "dev": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve --config webpack.config.ts  --mode development"
   },
   "repository": {
     "type": "git",
@@ -19,11 +19,8 @@
   },
   "homepage": "https://github.com/mizok/webpack_playground#readme",
   "devDependencies": {
-    "@babel/core": "^7.14.3",
-    "@babel/preset-env": "^7.14.4",
-    "@babel/register": "^7.16.0",
+    "@types/three": "^0.139.0",
     "@types/webpack-dev-server": "^4.7.2",
-    "babel-loader": "^8.2.2",
     "copy-webpack-plugin": "^9.0.1",
     "cross-env": "^7.0.3",
     "css-loader": "^5.2.1",
@@ -48,7 +45,8 @@
     "webpack-dev-server": "^4.7.2"
   },
   "dependencies": {
-    "jquery": "^3.6.0"
+    "es6-promise": "^4.2.8",
+    "three": "^0.139.0"
   },
   "browserslist": [
     "last 2 version",

@@ -5,7 +5,7 @@ const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
 import * as webpack from 'webpack';
-import 'webpack-dev-server';// dont remove this import, it's for webpack-dev-server type
+import 'webpack-dev-server'; // dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 const NO_COMPRESS = false;
 const PAGES_PATH = resolve(__dirname, './src/pages');
@@ -19,26 +19,25 @@ const entry: webpack.EntryObject = (() => {
     if (!o.match(templateRegx)) return;
     let entryName: string = o.replace(templateRegx, `$1`);
     const entryRegex = /(.*)(\.)(.*)/g;
-    // 如果解析出來的template名還包含"."的話, 例如"{name}.{entry}", 則將{entry}的部分自動解析為預計使用共用的entry，而{name}則作為build出來的檔案名稱
     if (entryName.match(entryRegex)) {
       entryName = entryName.replace(entryRegex, `$3`);
     }
     const entryPath = resolve(__dirname, `src/ts/${entryName}.ts`);
-    // 該entry的stylesheet
+    // entry stylesheet
     const entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryName}.scss`);
     const entryExist = fs.existsSync(entryPath);
     const entryStyleSheetExist = fs.existsSync(entryStyleSheetPath);
 
     if (entryExist) {
       if (!entryStyleSheetExist) {
-        throw new Error(`src/scss中找不到名為"${entryName}.scss"的模板樣式檔案，請補上該檔案。`)
+        throw new Error(`src/scss/${entryName}.scss is not found`)
       }
     }
     else {
-      throw new Error(`src/js中找不到名為"${entryName}.js"的入口檔案，請補上該entry file。`)
+      throw new Error(`src/ts/${entryName}.ts is not found`)
     }
-
-    entryObj[entryName] = [entryPath, entryStyleSheetPath];
+    // import es6-promise automatically
+    entryObj[entryName] = ['es6-promise/auto',entryPath, entryStyleSheetPath];
 
   })
   return entryObj;
@@ -60,7 +59,7 @@ const entryTemplates: HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((full
   const data = fs.readFileSync(ejsFilePath, 'utf8')
   if (!data) {
     fs.writeFile(ejsFilePath, ' ', () => { });
-    console.warn(`請注意 : ${fullFileName} 為空白檔案`);
+    console.warn(`WARNING : ${fullFileName} is an empty file`);
   }
 
   return new HtmlWebpackPlugin({
@@ -84,167 +83,167 @@ const entryTemplates: HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((full
 });
 
 
-const config: webpack.Configuration = {
-  entry: entry,
-  output: {
-    filename: 'js/[name].[chunkhash].js',
-    chunkFilename: '[id].[chunkhash].js',
-    path: resolve(__dirname, 'dist'),
-    clean: true
-  },
-  target: ['web', 'es5'],
-  devServer: {
-    historyApiFallback: true,
-    open: true,
-    compress: true,
-    watchFiles: [
-      'src/pages/*.html',
-      'src/template/*.html',
-      'src/template/**/*.html',
-      'src/pages/*.ejs',
-      'src/template/*.ejs',
-      'src/template/**/*.ejs',
-    ],// this is important
-    port: 8080
-  },
-  mode: 'development',
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node-modules/,
-        use: [
-          {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env']
-            }
-          }
-        ],
-      },
-      {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader',
-            options: {
-              minimize: !NO_COMPRESS
-            }
-          }
-        ],
-      },
-      {
-        test: /\.ejs$/,
-        use: [
-          {
-            loader: 'html-loader',
-            options: {
-              minimize: !NO_COMPRESS
-            }
-          },
-          'template-ejs-loader'
-        ]
-      },
-      {
-        test: /\.(jpe?g|png|gif)$/,
-        type: 'asset/resource',
-        generator: {
-          filename: 'assets/images/[name][ext]'
-        }
-      },
-      {
-        test: /\.(sass|scss|css)$/,
-        use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              publicPath: '../'
-            }
-          },
-          'css-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                ident: 'postcss',
-                plugins: [
-                  require('postcss-preset-env')()
-                ]
+const config = (env:any,argv:any):webpack.Configuration=>{
+  const configObj:webpack.Configuration = {
+    entry: entry,
+    output: {
+      filename: 'js/[name].[chunkhash].js',
+      chunkFilename: '[id].[chunkhash].js',
+      path: resolve(__dirname, 'dist'),
+      clean: true
+    },
+    target: ['web', 'es5'],
+    devServer: {
+      historyApiFallback: true,
+      open: true,
+      host:'192.168.100.191',
+      compress: true,
+      watchFiles: [
+        'src/pages/*.html',
+        'src/template/*.html',
+        'src/template/**/*.html',
+        'src/pages/*.ejs',
+        'src/template/*.ejs',
+        'src/template/**/*.ejs',
+      ],// this is important
+      port: 8080
+    },
+    mode: 'development',
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.html$/,
+          use: [
+            {
+              loader: 'html-loader',
+              options: {
+                minimize: !NO_COMPRESS
               }
             }
-          },
-          (() => {
-            return NO_COMPRESS ? {
-              loader: 'sass-loader',
-              options: { sourceMap: true, sassOptions: { minimize: false, outputStyle: 'expanded' } }
-            } : 'sass-loader'
-          })()
-
-        ]
-      },
-      {
-        test: /\.(woff(2)?|eot|ttf|otf|svg)$/,
-        type: 'asset/inline',
-      }
-
-    ]
-  },
-  resolve: {
-    alias: {
-      '@img': resolve(__dirname, './src/assets/images/'),
-      '@font': resolve(__dirname, './src/assets/fonts/')
-    }
-  },
-  optimization: {
-    minimize: !NO_COMPRESS,
-    minimizer: [new TerserPlugin({
-      terserOptions: {
-        format: {
-          comments: false,
+          ],
         },
-      },
-      test: /\.js(\?.*)?$/i,
-      extractComments: false
-    })],
-    splitChunks: { name: 'vendor', chunks: 'all' }
-  },
-  performance: {
-    hints: false,
-    maxEntrypointSize: 512000,
-    maxAssetSize: 512000
-  },
-  plugins: [
-    (() => {
-      return NO_COMPRESS ? undefined : new OptimizeCssAssetsWebpackPlugin()
-    })(),
-    new MiniCssExtractPlugin({
-      filename: 'css/[name].css'
-    }),
-    new CopyPlugin(
-      {
-        patterns: [
-          {
-            from: 'src/static',
-            to: 'static',
-            globOptions: {
-              dot: true,
-              ignore: ['**/.DS_Store', '**/.gitkeep'],
+        {
+          test: /\.ejs$/,
+          use: [
+            {
+              loader: 'html-loader',
+              options: {
+                minimize: !NO_COMPRESS
+              }
             },
-            noErrorOnMissing: true,
+            {
+              loader: 'template-ejs-loader',
+              options: {
+                data:{
+                  mode:argv.mode
+                }
+              }
+            }
+          ]
+        },
+        {
+          test: /\.(jpe?g|png|gif)$/,
+          type: 'asset/resource',
+          generator: {
+            filename: 'assets/images/[name][ext]'
           }
-        ],
+        },
+        {
+          test: /\.(sass|scss|css)$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: '../'
+              }
+            },
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  ident: 'postcss',
+                  plugins: [
+                    require('postcss-preset-env')()
+                  ]
+                }
+              }
+            },
+            (() => {
+              return NO_COMPRESS ? {
+                loader: 'sass-loader',
+                options: { sourceMap: true, sassOptions: { minimize: false, outputStyle: 'expanded' } }
+              } : 'sass-loader'
+            })()
+  
+          ]
+        },
+        {
+          test: /\.(woff(2)?|eot|ttf|otf|svg)$/,
+          type: 'asset/inline',
+        }
+  
+      ]
+    },
+    resolve: {
+      alias: {
+        '@img': resolve(__dirname, './src/assets/images/'),
+        '@font': resolve(__dirname, './src/assets/fonts/')
       }
-    ),
-    ...entryTemplates,
-
-  ].filter(function (x) {
-    return x !== undefined;
-  })
+    },
+    optimization: {
+      minimize: !NO_COMPRESS,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+        },
+        test: /\.js(\?.*)?$/i,
+        extractComments: false
+      })],
+      splitChunks: { name: 'vendor', chunks: 'all' }
+    },
+    performance: {
+      hints: false,
+      maxEntrypointSize: 512000,
+      maxAssetSize: 512000
+    },
+    plugins: [
+      (() => {
+        return NO_COMPRESS ? undefined : new OptimizeCssAssetsWebpackPlugin()
+      })(),
+      new MiniCssExtractPlugin({
+        filename: 'css/[name].css'
+      }),
+      new CopyPlugin(
+        {
+          patterns: [
+            {
+              from: 'src/static',
+              to: 'static',
+              globOptions: {
+                dot: true,
+                ignore: ['**/.DS_Store', '**/.gitkeep'],
+              },
+              noErrorOnMissing: true,
+            }
+          ],
+        }
+      ),
+      ...entryTemplates,
+  
+    ].filter(function (x) {
+      return x !== undefined;
+    })
+  }
+  return configObj;
 }
+
 
 export default config;
