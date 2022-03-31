@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --config webpack.config.ts --mode production",
-    "dev": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve --config webpack.config.ts  --mode development"
+    "dev": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve --config webpack.config.ts  --mode development",
+    "gh-deploy": "npm run build && git add dist -f && git commit -m 'dist subtree commit' && git subtree push --prefix dist origin gh-pages"
   },
   "repository": {
     "type": "git",
