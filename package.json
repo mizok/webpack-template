@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/mizok/webpack_playground#readme",
   "devDependencies": {
-    "@types/three": "^0.139.0",
     "@types/webpack-dev-server": "^4.7.2",
     "copy-webpack-plugin": "^9.0.1",
     "cross-env": "^7.0.3",
@@ -46,8 +45,7 @@
     "webpack-dev-server": "^4.7.2"
   },
   "dependencies": {
-    "es6-promise": "^4.2.8",
-    "three": "^0.139.0"
+    "es6-promise": "^4.2.8"
   },
   "browserslist": [
     "last 2 version",
