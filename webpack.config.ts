@@ -1,0 +1,249 @@
+const fs = require('fs');
+const { resolve } = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+import * as webpack from 'webpack';
+import 'webpack-dev-server'; // dont remove this import, it's for webpack-dev-server type
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+const NO_COMPRESS = false;
+const PAGES_PATH = resolve(__dirname, './src/pages');
+
+
+//generate entry object
+const entry: webpack.EntryObject = (() => {
+  const entryObj: webpack.EntryObject = {};
+  const templateRegx = /(.*)(\.)(ejs|html)/g;
+  fs.readdirSync(PAGES_PATH).forEach((o: string) => {
+    if (!o.match(templateRegx)) return;
+    let entryName: string = o.replace(templateRegx, `$1`);
+    const entryRegex = /(.*)(\.)(.*)/g;
+    if (entryName.match(entryRegex)) {
+      entryName = entryName.replace(entryRegex, `$3`);
+    }
+    const entryPath = resolve(__dirname, `src/ts/${entryName}.ts`);
+    // entry stylesheet
+    const entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryName}.scss`);
+    const entryExist = fs.existsSync(entryPath);
+    const entryStyleSheetExist = fs.existsSync(entryStyleSheetPath);
+
+    if (entryExist) {
+      if (!entryStyleSheetExist) {
+        throw new Error(`src/scss/${entryName}.scss is not found`)
+      }
+    }
+    else {
+      throw new Error(`src/ts/${entryName}.ts is not found`)
+    }
+    // import es6-promise automatically
+    entryObj[entryName] = ['es6-promise/auto',entryPath, entryStyleSheetPath];
+
+  })
+  return entryObj;
+})()
+//generate htmlWebpackPlugin instances
+const entryTemplates: HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((fullFileName: string) => {
+  const templateRegx = /(.*)(\.)(ejs|html)/g;
+  const ejsRegex = /(.*)(\.ejs)/g;
+  const entryRegex = /(.*)(\.)(.*)(\.)(ejs|html)/g;
+  if (!fullFileName.match(templateRegx)) return;
+  const isEjs = fullFileName.match(ejsRegex);
+  let outputFileName = fullFileName.replace(templateRegx, `$1`);
+  let entryName = outputFileName;
+  if (fullFileName.match(entryRegex)) {
+    outputFileName = fullFileName.replace(entryRegex, `$1`);
+    entryName = fullFileName.replace(entryRegex, `$3`);
+  }
+  const ejsFilePath = resolve(PAGES_PATH, `${fullFileName}`);
+  const data = fs.readFileSync(ejsFilePath, 'utf8')
+  if (!data) {
+    fs.writeFile(ejsFilePath, ' ', () => { });
+    console.warn(`WARNING : ${fullFileName} is an empty file`);
+  }
+
+  return new HtmlWebpackPlugin({
+    cache: false,
+    chunks: [entryName],
+    filename: `${outputFileName}.html`,
+    template: isEjs ? ejsFilePath : ejsFilePath.replace(ejsRegex, `$1.html`),
+    favicon: 'src/assets/images/logo.svg',
+    minify: NO_COMPRESS ? false : {
+      collapseWhitespace: true,
+      keepClosingSlash: true,
+      removeComments: true,
+      removeRedundantAttributes: false,
+      removeScriptTypeAttributes: true,
+      removeStyleLinkTypeAttributes: true,
+      useShortDoctype: true
+    }
+  })
+}).filter(function (x: HtmlWebpackPlugin | undefined) {
+  return x !== undefined;
+});
+
+
+const config = (env:any,argv:any):webpack.Configuration=>{
+  const configObj:webpack.Configuration = {
+    entry: entry,
+    output: {
+      filename: 'js/[name].[chunkhash].js',
+      chunkFilename: '[id].[chunkhash].js',
+      path: resolve(__dirname, 'dist'),
+      clean: true
+    },
+    target: ['web', 'es5'],
+    devServer: {
+      historyApiFallback: true,
+      open: true,
+      host:'192.168.100.191',
+      compress: true,
+      watchFiles: [
+        'src/pages/*.html',
+        'src/template/*.html',
+        'src/template/**/*.html',
+        'src/pages/*.ejs',
+        'src/template/*.ejs',
+        'src/template/**/*.ejs',
+      ],// this is important
+      port: 8080
+    },
+    mode: 'development',
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.html$/,
+          use: [
+            {
+              loader: 'html-loader',
+              options: {
+                minimize: !NO_COMPRESS
+              }
+            }
+          ],
+        },
+        {
+          test: /\.ejs$/,
+          use: [
+            {
+              loader: 'html-loader',
+              options: {
+                minimize: !NO_COMPRESS
+              }
+            },
+            {
+              loader: 'template-ejs-loader',
+              options: {
+                data:{
+                  mode:argv.mode
+                }
+              }
+            }
+          ]
+        },
+        {
+          test: /\.(jpe?g|png|gif)$/,
+          type: 'asset/resource',
+          generator: {
+            filename: 'assets/images/[name][ext]'
+          }
+        },
+        {
+          test: /\.(sass|scss|css)$/,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                publicPath: '../'
+              }
+            },
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                postcssOptions: {
+                  ident: 'postcss',
+                  plugins: [
+                    require('postcss-preset-env')()
+                  ]
+                }
+              }
+            },
+            (() => {
+              return NO_COMPRESS ? {
+                loader: 'sass-loader',
+                options: { sourceMap: true, sassOptions: { minimize: false, outputStyle: 'expanded' } }
+              } : 'sass-loader'
+            })()
+  
+          ]
+        },
+        {
+          test: /\.(woff(2)?|eot|ttf|otf|svg)$/,
+          type: 'asset/inline',
+        }
+  
+      ]
+    },
+    resolve: {
+      alias: {
+        '@img': resolve(__dirname, './src/assets/images/'),
+        '@font': resolve(__dirname, './src/assets/fonts/')
+      }
+    },
+    optimization: {
+      minimize: !NO_COMPRESS,
+      minimizer: [new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+        },
+        test: /\.js(\?.*)?$/i,
+        extractComments: false
+      })],
+      splitChunks: { name: 'vendor', chunks: 'all' }
+    },
+    performance: {
+      hints: false,
+      maxEntrypointSize: 512000,
+      maxAssetSize: 512000
+    },
+    plugins: [
+      (() => {
+        return NO_COMPRESS ? undefined : new OptimizeCssAssetsWebpackPlugin()
+      })(),
+      new MiniCssExtractPlugin({
+        filename: 'css/[name].css'
+      }),
+      new CopyPlugin(
+        {
+          patterns: [
+            {
+              from: 'src/static',
+              to: 'static',
+              globOptions: {
+                dot: true,
+                ignore: ['**/.DS_Store', '**/.gitkeep'],
+              },
+              noErrorOnMissing: true,
+            }
+          ],
+        }
+      ),
+      ...entryTemplates,
+  
+    ].filter(function (x) {
+      return x !== undefined;
+    })
+  }
+  return configObj;
+}
+
+
+export default config;
