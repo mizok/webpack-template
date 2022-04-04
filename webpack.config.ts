@@ -9,7 +9,7 @@ import 'webpack-dev-server'; // dont remove this import, it's for webpack-dev-se
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 const NO_COMPRESS = false;
 
-const getEntriesByParsingTemplateNames = (templatesFolderName)=>{
+const getEntriesByParsingTemplateNames = (templatesFolderName,atRoot = true)=>{
   const folderPath = resolve(__dirname, `./src/${templatesFolderName}`);
   const entryObj: webpack.EntryObject = {};
   const templateRegx = /(.*)(\.)(ejs|html)/g;
@@ -20,9 +20,12 @@ const getEntriesByParsingTemplateNames = (templatesFolderName)=>{
     if (entryName.match(entryRegex)) {
       entryName = entryName.replace(entryRegex, `$3`);
     }
+
+    entryName= atRoot?entryName:`${templatesFolderName}/${entryName}`
+
     let entryPath = resolve(__dirname, `src/ts/${entryName}.ts`);
     // entry stylesheet
-    let entryStyleSheetPath = resolve(__dirname, `./src/scss/${templatesFolderName}/${entryName}.scss`);
+    let entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryName}.scss`);
 
     entryPath = fs.existsSync(entryPath)?entryPath:undefined;
     entryStyleSheetPath = fs.existsSync(entryStyleSheetPath)?entryStyleSheetPath:undefined;
@@ -82,7 +85,7 @@ const getTemaplteInstancesByParsingTemplateNames = (templatesFolderName,atRoot=t
 //generate pageEntry object
 const pageEntries: webpack.EntryObject = getEntriesByParsingTemplateNames('pages');
 //generate exampleEntry object
-const exampleEntries: webpack.EntryObject = getEntriesByParsingTemplateNames('examples');
+const exampleEntries: webpack.EntryObject = getEntriesByParsingTemplateNames('examples',false);
 //generate htmlWebpackPlugin instances
 const pageEntryTemplates: HtmlWebpackPlugin[] = getTemaplteInstancesByParsingTemplateNames('pages');
 const exampleEntryTemplates: HtmlWebpackPlugin[] = getTemaplteInstancesByParsingTemplateNames('examples',false);
@@ -196,7 +199,6 @@ const config = (env:any,argv:any):webpack.Configuration=>{
     },
     resolve: {
       alias: {
-        '@node':resolve(__dirname,'./node-util.ts'),
         '@img': resolve(__dirname, './src/assets/images/'),
         '@font': resolve(__dirname, './src/assets/fonts/')
       }

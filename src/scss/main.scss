@@ -1,4 +1,151 @@
+$hamburger-padding-x           : 10px ;
+$hamburger-padding-y           : 10px ;
+$hamburger-layer-width         : 20px ;
+$hamburger-layer-height        : 4px ;
+$hamburger-layer-spacing       : 4px ;
+$hamburger-layer-color         : gray ;
+$hamburger-layer-border-radius : 4px ;
+$hamburger-hover-opacity       : 0.7 ;
+$hamburger-active-layer-color  : gray ;
+
+@import '~hamburgers/_sass/hamburgers/hamburgers.scss';
+
 html,
 body {
   height: 100%;
+  margin: 0;
+  *,*::after,*:before{
+    box-sizing: border-box;
+  }
+}
+
+.playground{
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  $sidebarWidth:300px;
+  
+  &__inner{
+    display: inline-flex;
+    height: 100%;
+    width: calc(100% + #{$sidebarWidth});
+    transform:translateX(-#{$sidebarWidth});
+    transition:transform 500ms;
+  }
+
+  &--active &__inner{
+    transform:translateX(0);
+  }
+
+
+  &__title{
+    font-family: 'Noto Sans TC';
+    font-weight: 300;
+    font-size: 30px;
+    padding: 30px ;
+    margin: 0;
+  }
+
+  &__sidebar{
+    width: $sidebarWidth;
+    height: 100%;
+    flex:none;
+    box-shadow: -13px 4px 42px -15px rgba(59,59,59,0.2) inset;
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    >*{
+      flex:1;
+    }
+  }
+
+  &__sidebar > &__title{
+    flex:none;
+  }
+
+  &__body{
+    width: 100%;
+    flex:none;
+    height: 100%;
+    position: relative;
+  }
+
+  &__body &__toggler{
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+
+  &__content{
+    width: 100%;
+    height: 100%;
+  }
+}
+.menu{
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  @mixin shade{
+    content: '';
+    display: block;
+    height: 10px;
+    width: 100%;
+    position: absolute;
+    pointer-events: none;
+    opacity: 0;
+    transition:opacity 500ms;
+    z-index: 3;
+  }
+  &:before{
+    top: 0;
+    @include shade;
+    filter:blur(3px);
+    background-image: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(100,100,100, 0.3) 100%);
+  }
+  &:after{
+    bottom: 0;
+    @include shade;
+    height: 50%;
+    background-image: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(100,100,100,0.5) 100%);;
+  }
+
+  &--top-shaded::before{
+    opacity: 1;
+  }
+  &--bot-shaded::after{
+    opacity: 1;
+  }
+ 
+  &__inner{
+    height: 100%;
+    overflow: auto;
+  }
+  &__list{
+    width: 100%;
+  }
+
+  &__item{
+    width: 100%
+  }
+
+
+  &__link{
+    font-size: 16px;
+    font-family: 'Noto Sans TC';
+    padding: 20px 30px;
+    background-color: transparent;
+    transition:color 500ms,background-color 500ms;
+    width: 100%;
+    display: block;
+    color:gray;
+    text-decoration: none;
+    &:hover,&:active{
+      color:white;
+      text-decoration: none;
+    }
+
+    &:hover{
+      background-color: rgba(175, 175, 175,0.5);
+    }
+  }
 }

@@ -1,0 +1,17 @@
+<div class="menu" id="menu">
+  <div class="menu__inner">
+    <div class="menu__list">
+      <% const fs = require('fs') %>
+      <% fs.readdirSync('./src/examples').forEach(exampleName => { %>
+        <div class="menu__item">
+          <% const templateRegx = /(.*)(\.)(ejs|html)/g; %>
+            <% const entryName = exampleName.replace(templateRegx, `$1`);%>
+          <a href="#" class="menu__link" data-route="<%= entryName %>">
+            <%= entryName %>
+          </a>
+        </div>
+      <% }) %>
+
+    </div>
+  </div>
+</div>

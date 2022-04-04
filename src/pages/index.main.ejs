@@ -4,7 +4,24 @@
 <%- include('../template/head.ejs',{title:'Index'})%>
 
 <body>
-  <%- include('../template/header.ejs') %>
+  <div class="playground" id="playground">
+    <div class="playground__inner">
+      <div class="playground__sidebar">
+        <h1 class="playground__title">
+          Webpack Playground Template
+        </h1>
+        <%- include('../template/menu.ejs') %>
+      </div>
+      <div class="playground__body">
+        <button class="playground__toggler hamburger hamburger--collapse" id="playground-toggler" type="button">
+          <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+          </span>
+        </button>
+        <iframe src="examples/ex1.html" frameborder="0" class="playground__content" id="playground-content"></iframe>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

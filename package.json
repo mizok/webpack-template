@@ -31,8 +31,8 @@
     "optimize-css-assets-webpack-plugin": "^5.0.4",
     "postcss-loader": "^5.2.0",
     "postcss-preset-env": "^6.7.0",
-    "sass": "^1.32.8",
-    "sass-loader": "^11.0.1",
+    "sass": "^1.33.0",
+    "sass-loader": "^12.0.0",
     "style-loader": "^2.0.0",
     "template-ejs-loader": "latest",
     "terser-webpack-plugin": "^5.3.1",
@@ -45,7 +45,8 @@
     "webpack-dev-server": "^4.7.2"
   },
   "dependencies": {
-    "es6-promise": "^4.2.8"
+    "es6-promise": "^4.2.8",
+    "hamburgers": "^1.2.1"
   },
   "browserslist": [
     "last 2 version",
