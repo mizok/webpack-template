@@ -9,15 +9,9 @@ $hamburger-hover-opacity       : 0.7 ;
 $hamburger-active-layer-color  : gray ;
 
 @import '~hamburgers/_sass/hamburgers/hamburgers.scss';
+@import 'util/main';
+@include reset();
 
-html,
-body {
-  height: 100%;
-  margin: 0;
-  *,*::after,*:before{
-    box-sizing: border-box;
-  }
-}
 
 .playground{
   width: 100%;
