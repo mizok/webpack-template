@@ -196,7 +196,7 @@ const config = (env:any,argv:any):webpack.Configuration=>{
     },
     resolve: {
       alias: {
-        '@node':resolve(__dirname,'./node.ts'),
+        '@node':resolve(__dirname,'./node-util.ts'),
         '@img': resolve(__dirname, './src/assets/images/'),
         '@font': resolve(__dirname, './src/assets/fonts/')
       }
