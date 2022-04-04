@@ -21,11 +21,11 @@ const getEntriesByParsingTemplateNames = (templatesFolderName,atRoot = true)=>{
       entryName = entryName.replace(entryRegex, `$3`);
     }
 
-    entryName= atRoot?entryName:`${templatesFolderName}/${entryName}`
+    const entryDependency= atRoot?entryName:`${templatesFolderName}/${entryName}`
 
-    let entryPath = resolve(__dirname, `src/ts/${entryName}.ts`);
+    let entryPath = resolve(__dirname, `src/ts/${entryDependency}.ts`);
     // entry stylesheet
-    let entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryName}.scss`);
+    let entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryDependency}.scss`);
 
     entryPath = fs.existsSync(entryPath)?entryPath:undefined;
     entryStyleSheetPath = fs.existsSync(entryStyleSheetPath)?entryStyleSheetPath:undefined;
