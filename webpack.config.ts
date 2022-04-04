@@ -31,7 +31,7 @@ const getEntriesByParsingTemplateNames = (templatesFolderName,atRoot = true)=>{
     entryStyleSheetPath = fs.existsSync(entryStyleSheetPath)?entryStyleSheetPath:undefined;
 
     // import es6-promise and scss util automatically
-    entryObj[entryName] = ['es6-promise/auto',entryPath, './src/scss/util/main.scss',entryStyleSheetPath].filter(function (x: string | undefined) {
+    entryObj[entryName] = ['es6-promise/auto',entryPath,entryStyleSheetPath].filter(function (x: string | undefined) {
       return x !== undefined;
     });
 
