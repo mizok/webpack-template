@@ -10,6 +10,8 @@ tags:
 
 A webpack boilerplate for playground exmaple showcase that uses `ejs` as the template engine.
 
+[Check The Demo Here :D](https://mizok.github.io/webpack-playground-template/)
+
 ## Installation And Uasge
 
 - Run `npm install` or `npm i` first to install all dependencies.
