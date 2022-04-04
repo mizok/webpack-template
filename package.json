@@ -45,7 +45,8 @@
     "webpack-dev-server": "^4.7.2"
   },
   "dependencies": {
-    "es6-promise": "^4.2.8"
+    "es6-promise": "^4.2.8",
+    "p5": "^1.4.1"
   },
   "browserslist": [
     "last 2 version",

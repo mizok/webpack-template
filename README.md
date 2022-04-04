@@ -1,8 +1,8 @@
 ---
-title: webpack-template
+title: webpack-playground-template
 date: 
 author: Mizok
-version: 0.2.1
+version: 0.1.0
 tags: 
 ---
 

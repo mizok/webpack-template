@@ -8,84 +8,89 @@ import * as webpack from 'webpack';
 import 'webpack-dev-server'; // dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 const NO_COMPRESS = false;
-const PAGES_PATH = resolve(__dirname, './src/pages');
 
-
-//generate entry object
-const entry: webpack.EntryObject = (() => {
+const getEntriesByParsingTemplateNames = (templatesFolderName)=>{
+  const folderPath = resolve(__dirname, `./src/${templatesFolderName}`);
   const entryObj: webpack.EntryObject = {};
   const templateRegx = /(.*)(\.)(ejs|html)/g;
-  fs.readdirSync(PAGES_PATH).forEach((o: string) => {
+  fs.readdirSync(folderPath).forEach((o: string) => {
     if (!o.match(templateRegx)) return;
     let entryName: string = o.replace(templateRegx, `$1`);
     const entryRegex = /(.*)(\.)(.*)/g;
     if (entryName.match(entryRegex)) {
       entryName = entryName.replace(entryRegex, `$3`);
     }
-    const entryPath = resolve(__dirname, `src/ts/${entryName}.ts`);
+    let entryPath = resolve(__dirname, `src/ts/${entryName}.ts`);
     // entry stylesheet
-    const entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryName}.scss`);
-    const entryExist = fs.existsSync(entryPath);
-    const entryStyleSheetExist = fs.existsSync(entryStyleSheetPath);
+    let entryStyleSheetPath = resolve(__dirname, `./src/scss/${templatesFolderName}/${entryName}.scss`);
 
-    if (entryExist) {
-      if (!entryStyleSheetExist) {
-        throw new Error(`src/scss/${entryName}.scss is not found`)
-      }
-    }
-    else {
-      throw new Error(`src/ts/${entryName}.ts is not found`)
-    }
+    entryPath = fs.existsSync(entryPath)?entryPath:undefined;
+    entryStyleSheetPath = fs.existsSync(entryStyleSheetPath)?entryStyleSheetPath:undefined;
+
     // import es6-promise automatically
-    entryObj[entryName] = ['es6-promise/auto',entryPath, entryStyleSheetPath];
+    entryObj[entryName] = ['es6-promise/auto',entryPath, entryStyleSheetPath].filter(function (x: string | undefined) {
+      return x !== undefined;
+    });
 
   })
   return entryObj;
-})()
-//generate htmlWebpackPlugin instances
-const entryTemplates: HtmlWebpackPlugin[] = fs.readdirSync(PAGES_PATH).map((fullFileName: string) => {
-  const templateRegx = /(.*)(\.)(ejs|html)/g;
-  const ejsRegex = /(.*)(\.ejs)/g;
-  const entryRegex = /(.*)(\.)(.*)(\.)(ejs|html)/g;
-  if (!fullFileName.match(templateRegx)) return;
-  const isEjs = fullFileName.match(ejsRegex);
-  let outputFileName = fullFileName.replace(templateRegx, `$1`);
-  let entryName = outputFileName;
-  if (fullFileName.match(entryRegex)) {
-    outputFileName = fullFileName.replace(entryRegex, `$1`);
-    entryName = fullFileName.replace(entryRegex, `$3`);
-  }
-  const ejsFilePath = resolve(PAGES_PATH, `${fullFileName}`);
-  const data = fs.readFileSync(ejsFilePath, 'utf8')
-  if (!data) {
-    fs.writeFile(ejsFilePath, ' ', () => { });
-    console.warn(`WARNING : ${fullFileName} is an empty file`);
-  }
+}
 
-  return new HtmlWebpackPlugin({
-    cache: false,
-    chunks: [entryName],
-    filename: `${outputFileName}.html`,
-    template: isEjs ? ejsFilePath : ejsFilePath.replace(ejsRegex, `$1.html`),
-    favicon: 'src/assets/images/logo.svg',
-    minify: NO_COMPRESS ? false : {
-      collapseWhitespace: true,
-      keepClosingSlash: true,
-      removeComments: true,
-      removeRedundantAttributes: false,
-      removeScriptTypeAttributes: true,
-      removeStyleLinkTypeAttributes: true,
-      useShortDoctype: true
+const getTemaplteInstancesByParsingTemplateNames = (templatesFolderName,atRoot=true)=>{
+  const forderPath = resolve(__dirname, `./src/${templatesFolderName}`);
+  return fs.readdirSync(forderPath).map((fullFileName: string) => {
+    const templateRegx = /(.*)(\.)(ejs|html)/g;
+    const ejsRegex = /(.*)(\.ejs)/g;
+    const entryRegex = /(.*)(\.)(.*)(\.)(ejs|html)/g;
+    if (!fullFileName.match(templateRegx)) return;
+    const isEjs = fullFileName.match(ejsRegex);
+    let outputFileName = fullFileName.replace(templateRegx, `$1`);
+    let entryName = outputFileName;
+    if (fullFileName.match(entryRegex)) {
+      outputFileName = fullFileName.replace(entryRegex, `$1`);
+      entryName = fullFileName.replace(entryRegex, `$3`);
     }
-  })
-}).filter(function (x: HtmlWebpackPlugin | undefined) {
-  return x !== undefined;
-});
+    const ejsFilePath = resolve(forderPath, `${fullFileName}`);
+    const data = fs.readFileSync(ejsFilePath, 'utf8')
+    if (!data) {
+      fs.writeFile(ejsFilePath, ' ', () => { });
+      console.warn(`WARNING : ${fullFileName} is an empty file`);
+    }
+  
+    return new HtmlWebpackPlugin({
+      cache: false,
+      chunks: [entryName],
+      filename: `${atRoot?'':templatesFolderName+'/'}${outputFileName}.html`,
+      template: isEjs ? ejsFilePath : ejsFilePath.replace(ejsRegex, `$1.html`),
+      favicon: 'src/assets/images/logo.svg',
+      minify: NO_COMPRESS ? false : {
+        collapseWhitespace: true,
+        keepClosingSlash: true,
+        removeComments: true,
+        removeRedundantAttributes: false,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        useShortDoctype: true
+      }
+    })
+  }).filter(function (x: HtmlWebpackPlugin | undefined) {
+    return x !== undefined;
+  });
+}
+
+
+//generate pageEntry object
+const pageEntries: webpack.EntryObject = getEntriesByParsingTemplateNames('pages');
+//generate exampleEntry object
+const exampleEntries: webpack.EntryObject = getEntriesByParsingTemplateNames('examples');
+//generate htmlWebpackPlugin instances
+const pageEntryTemplates: HtmlWebpackPlugin[] = getTemaplteInstancesByParsingTemplateNames('pages');
+const exampleEntryTemplates: HtmlWebpackPlugin[] = getTemaplteInstancesByParsingTemplateNames('examples',false);
 
 
 const config = (env:any,argv:any):webpack.Configuration=>{
   const configObj:webpack.Configuration = {
-    entry: entry,
+    entry: {...pageEntries,...exampleEntries},
     output: {
       filename: 'js/[name].[chunkhash].js',
       chunkFilename: '[id].[chunkhash].js',
@@ -96,7 +101,6 @@ const config = (env:any,argv:any):webpack.Configuration=>{
     devServer: {
       historyApiFallback: true,
       open: true,
-      host:'192.168.100.191',
       compress: true,
       watchFiles: [
         'src/pages/*.html',
@@ -192,6 +196,7 @@ const config = (env:any,argv:any):webpack.Configuration=>{
     },
     resolve: {
       alias: {
+        '@node':resolve(__dirname,'./node.ts'),
         '@img': resolve(__dirname, './src/assets/images/'),
         '@font': resolve(__dirname, './src/assets/fonts/')
       }
@@ -236,7 +241,8 @@ const config = (env:any,argv:any):webpack.Configuration=>{
           ],
         }
       ),
-      ...entryTemplates,
+      ...pageEntryTemplates,
+      ...exampleEntryTemplates
   
     ].filter(function (x) {
       return x !== undefined;
