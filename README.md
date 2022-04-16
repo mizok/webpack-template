@@ -2,7 +2,7 @@
 title: webpack-template
 date: 
 author: Mizok
-version: 0.6.0
+version: 0.7.0
 tags: 
 ---
 
@@ -51,12 +51,19 @@ On the other hand, if you want your output page name to be `index.html`,and usin
 - an `main.ts` file in `./src/ts`
 - an `main.scss` file in `./src/scss`
 
-### I want to get webpack `mode` environment argument in `ejs` file, how can I make this?
+### I want to get webpack `mode` environment argument in `ejs` and `js` files, how can I make this?
 
 Like this (in your `ejs` file) :
 
 ```ejs
-<div><%= mode%></div> 
+<!-- this will output development|production -->
+<div><%= mode%></div>  
+```
+
+And this (in your `js` file) :
+
+```javascript
+console.log(PROCESS.MODE) // this will output development|production
 ```
 
 ### My `img` tag is not showing because `webpack` seems to get my `src` wrong.
