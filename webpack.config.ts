@@ -240,6 +240,15 @@ const config = (env: any, argv: any): webpack.Configuration => {
                 ignore: ['**/.DS_Store', '**/.gitkeep'],
               },
               noErrorOnMissing: true,
+            },
+            {
+              from: 'src/assets/images',
+              to: 'assets/images',
+              globOptions: {
+                dot: true,
+                ignore: ['**/.DS_Store', '**/.gitkeep'],
+              },
+              noErrorOnMissing: true,
             }
           ],
         }
