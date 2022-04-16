@@ -7,9 +7,9 @@ const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plug
 import * as webpack from 'webpack';
 import 'webpack-dev-server'; // dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-const COMPRESS = false;
+const COMPRESS = true;
 
-const getEntriesByParsingTemplateNames = (templatesFolderName,atRoot = true)=>{
+const getEntriesByParsingTemplateNames = (templatesFolderName, atRoot = true) => {
   const folderPath = resolve(__dirname, `./src/${templatesFolderName}`);
   const entryObj: webpack.EntryObject = {};
   const templateRegx = /(.*)(\.)(ejs|html)/g;
@@ -21,17 +21,17 @@ const getEntriesByParsingTemplateNames = (templatesFolderName,atRoot = true)=>{
       entryName = entryName.replace(entryRegex, `$3`);
     }
 
-    const entryDependency= atRoot?entryName:`${templatesFolderName}/${entryName}`
+    const entryDependency = atRoot ? entryName : `${templatesFolderName}/${entryName}`
 
     let entryPath = resolve(__dirname, `src/ts/${entryDependency}.ts`);
     // entry stylesheet
     let entryStyleSheetPath = resolve(__dirname, `./src/scss/${entryDependency}.scss`);
 
-    entryPath = fs.existsSync(entryPath)?entryPath:undefined;
-    entryStyleSheetPath = fs.existsSync(entryStyleSheetPath)?entryStyleSheetPath:undefined;
+    entryPath = fs.existsSync(entryPath) ? entryPath : undefined;
+    entryStyleSheetPath = fs.existsSync(entryStyleSheetPath) ? entryStyleSheetPath : undefined;
 
     // import es6-promise and scss util automatically
-    entryObj[entryName] = ['es6-promise/auto',entryPath,'./src/scss/reset.scss',entryStyleSheetPath].filter(function (x: string | undefined) {
+    entryObj[entryName] = ['es6-promise/auto', entryPath, './src/scss/reset.scss', entryStyleSheetPath].filter(function (x: string | undefined) {
       return x !== undefined;
     });
 
@@ -39,7 +39,7 @@ const getEntriesByParsingTemplateNames = (templatesFolderName,atRoot = true)=>{
   return entryObj;
 }
 
-const getTemaplteInstancesByParsingTemplateNames = (templatesFolderName,atRoot=true)=>{
+const getTemaplteInstancesByParsingTemplateNames = (templatesFolderName, atRoot = true) => {
   const forderPath = resolve(__dirname, `./src/${templatesFolderName}`);
   return fs.readdirSync(forderPath).map((fullFileName: string) => {
     const templateRegx = /(.*)(\.)(ejs|html)/g;
@@ -59,11 +59,11 @@ const getTemaplteInstancesByParsingTemplateNames = (templatesFolderName,atRoot=t
       fs.writeFile(ejsFilePath, ' ', () => { });
       console.warn(`WARNING : ${fullFileName} is an empty file`);
     }
-  
+
     return new HtmlWebpackPlugin({
       cache: false,
       chunks: [entryName],
-      filename: `${atRoot?'':templatesFolderName+'/'}${outputFileName}.html`,
+      filename: `${atRoot ? '' : templatesFolderName + '/'}${outputFileName}.html`,
       template: isEjs ? ejsFilePath : ejsFilePath.replace(ejsRegex, `$1.html`),
       favicon: 'src/assets/images/logo.svg',
       minify: COMPRESS ? {
@@ -74,7 +74,7 @@ const getTemaplteInstancesByParsingTemplateNames = (templatesFolderName,atRoot=t
         removeScriptTypeAttributes: true,
         removeStyleLinkTypeAttributes: true,
         useShortDoctype: true
-      }:false
+      } : false
     })
   }).filter(function (x: HtmlWebpackPlugin | undefined) {
     return x !== undefined;
@@ -86,8 +86,8 @@ const pageEntries: webpack.EntryObject = getEntriesByParsingTemplateNames('pages
 const pageEntryTemplates: HtmlWebpackPlugin[] = getTemaplteInstancesByParsingTemplateNames('pages');
 
 
-const config = (env:any,argv:any):webpack.Configuration=>{
-  const configObj:webpack.Configuration = {
+const config = (env: any, argv: any): webpack.Configuration => {
+  const configObj: webpack.Configuration = {
     entry: pageEntries,
     output: {
       filename: 'js/[name].[chunkhash].js',
@@ -141,8 +141,8 @@ const config = (env:any,argv:any):webpack.Configuration=>{
             {
               loader: 'template-ejs-loader',
               options: {
-                data:{
-                  mode:argv.mode
+                data: {
+                  mode: argv.mode
                 }
               }
             }
@@ -177,19 +177,22 @@ const config = (env:any,argv:any):webpack.Configuration=>{
               }
             },
             (() => {
-              return COMPRESS ? 'sass-loader': {
+              return COMPRESS ? 'sass-loader' : {
                 loader: 'sass-loader',
                 options: { sourceMap: true, sassOptions: { minimize: false, outputStyle: 'expanded' } }
-              } 
+              }
             })()
-  
+
           ]
         },
         {
           test: /\.(woff(2)?|eot|ttf|otf|svg)$/,
           type: 'asset/inline',
+          generator: {
+            filename: 'assets/fonts/[name][ext]'
+          }
         }
-  
+
       ]
     },
     resolve: {
@@ -217,8 +220,11 @@ const config = (env:any,argv:any):webpack.Configuration=>{
       maxAssetSize: 512000
     },
     plugins: [
+      new webpack.DefinePlugin({
+        'PROCESS.MODE': JSON.stringify(argv.mode)
+      }),
       (() => {
-        return COMPRESS ?  new OptimizeCssAssetsWebpackPlugin():undefined
+        return COMPRESS ? new OptimizeCssAssetsWebpackPlugin() : undefined
       })(),
       new MiniCssExtractPlugin({
         filename: 'css/[name].css'
@@ -239,7 +245,7 @@ const config = (env:any,argv:any):webpack.Configuration=>{
         }
       ),
       ...pageEntryTemplates
-  
+
     ].filter(function (x) {
       return x !== undefined;
     })
