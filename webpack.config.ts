@@ -149,7 +149,7 @@ const config = (env: any, argv: any): webpack.Configuration => {
           ]
         },
         {
-          test: /\.(jpe?g|png|gif)$/,
+          test: /\.(jpe?g|png|gif|svg)$/,
           type: 'asset/resource',
           generator: {
             filename: 'assets/images/[name][ext]'
@@ -186,8 +186,8 @@ const config = (env: any, argv: any): webpack.Configuration => {
           ]
         },
         {
-          test: /\.(woff(2)?|eot|ttf|otf|svg)$/,
-          type: 'asset/inline',
+          test: /\.(woff(2)?|eot|ttf|otf)$/,
+          type: 'asset/resource',
           generator: {
             filename: 'assets/fonts/[name][ext]'
           }
