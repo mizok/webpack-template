@@ -2,7 +2,11 @@
 title: webpack-template
 date: 
 author: Mizok
+<<<<<<< HEAD
 version: 0.9.0
+=======
+version: 0.9.3
+>>>>>>> 694d8e1816d745e2a5576d5c8f017ed5263ad53d
 tags: 
 ---
 
