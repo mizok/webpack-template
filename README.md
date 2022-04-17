@@ -2,7 +2,7 @@
 title: webpack-template
 date: 
 author: Mizok
-version: 0.9.3
+version: 0.9.0
 tags: 
 ---
 
