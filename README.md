@@ -48,8 +48,8 @@ By Default, if you want your output page name to be `index.html`, and you are no
 On the other hand, if you want your output page name to be `index.html`,and using a chunk named `main`, then you will need:
 
 - an `index.main.ejs` file in `./src/pages`  
-- an `main.ts` file in `./src/ts`
-- an `main.scss` file in `./src/scss`
+- a `main.ts` file in `./src/ts`
+- a `main.scss` file in `./src/scss`
 
 ### I want to get webpack `mode` environment argument in `ejs` and `js` files, how can I make this?
 
