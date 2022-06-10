@@ -68,7 +68,7 @@ console.log(PROCESS.MODE) // this will output development|production
 
 ### My `img` tag is not showing because `webpack` seems to get my `src` wrong.
 
-Check if you are using `alias` path , but not relative path, like below:
+You have to use `alias` path , not relative path(like below):
 
 ```html
 <img src="~@img/logo.png">
