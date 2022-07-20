@@ -3,7 +3,7 @@ const { resolve } = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 import * as webpack from 'webpack';
 import 'webpack-dev-server'; // dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -196,7 +196,7 @@ const config = (env: any, argv: any): webpack.Configuration => {
       ]
     },
     resolve: {
-      extensions:['.ts','.tsx','.js','.jsx','json'],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', 'json'],
       alias: {
         '@img': resolve(__dirname, './src/assets/images/'),
         '@font': resolve(__dirname, './src/assets/fonts/')
@@ -204,15 +204,18 @@ const config = (env: any, argv: any): webpack.Configuration => {
     },
     optimization: {
       minimize: COMPRESS,
-      minimizer: [new TerserPlugin({
-        terserOptions: {
-          format: {
-            comments: false,
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            format: {
+              comments: false,
+            },
           },
-        },
-        test: /\.js(\?.*)?$/i,
-        extractComments: false
-      })],
+          test: /\.js(\?.*)?$/i,
+          extractComments: false
+        }),
+        new CssMinimizerPlugin()
+      ],
       splitChunks: { name: 'vendor', chunks: 'all' }
     },
     performance: {
@@ -224,9 +227,6 @@ const config = (env: any, argv: any): webpack.Configuration => {
       new webpack.DefinePlugin({
         'PROCESS.MODE': JSON.stringify(argv.mode)
       }),
-      (() => {
-        return COMPRESS ? new OptimizeCssAssetsWebpackPlugin() : undefined
-      })(),
       new MiniCssExtractPlugin({
         filename: 'css/[name].css'
       }),
