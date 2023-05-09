@@ -4,6 +4,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 import * as webpack from 'webpack';
 import 'webpack-dev-server'; // dont remove this import, it's for webpack-dev-server type
 import HtmlWebpackPlugin from 'html-webpack-plugin';
@@ -230,6 +231,15 @@ const config = (env: any, argv: any): webpack.Configuration => {
       new MiniCssExtractPlugin({
         filename: 'css/[name].css'
       }),
+      (()=>{
+        if(argv.mode=='production'){
+          return  new BundleAnalyzerPlugin()
+        }
+        else{
+          return undefined;
+        }
+      })(),
+      
       new CopyPlugin(
         {
           patterns: [
