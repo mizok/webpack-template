@@ -1,12 +1,12 @@
 {
-  "name": "webpack_playground",
-  "version": "1.0.0",
+  "name": "webpack-template",
+  "version": "0.11.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack --config webpack.config.ts --mode production",
-    "dev": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" webpack serve --config webpack.config.ts  --mode development",
+    "build": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.config.ts --mode production",
+    "dev": "npx cross-env TS_NODE_PROJECT=\"tsconfig-for-webpack-config.json\" NODE_OPTIONS=--openssl-legacy-provider webpack serve --config webpack.config.ts  --mode development",
     "deploy": "npm run build && npx gh-pages -d dist"
   },
   "repository": {
